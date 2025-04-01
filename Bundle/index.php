@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <?php
-session_start();
-
-// Kontrola přihlášení
-
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    header("Location: sign.php");
-    exit();
-}
-
 
 try{
     $conn = new mysqli('localhost', 'root', 'pass', 'game');
@@ -20,7 +11,6 @@ try{
 
 $inventory = [];
 $marketplace = [];
-$credit = $conn->query("SELECT credit FROM player WHERE id = 1")->fetch_assoc();
 
 $result = $conn->query("SELECT * FROM inventory");
 if ($result->num_rows > 0) {
@@ -48,22 +38,9 @@ if ($result->num_rows > 0) {
 </head>
 <body>
 <div class="container">
-    <h5>
-        <?php
-        echo "Vítej ".$_SESSION["username"]."!";
-        echo "<br>";
-        echo "čas do odhlášení: ".date("H:i:s", $_SESSION["expiration"]);
-            if(isset($_SESSION["message"])){
-                echo $_SESSION["message"];
-                unset($_SESSION["message"]);
-            }else{
-                echo "Vše ok";
-            }
-        ?>
-    </h5>
     <div class="player-section">
         <h2>Player</h2>
-        <p>Credits: <span id="playerCredits"><?=$credit["credit"];?></span></p>
+        <p>Credits: <span id="playerCredits">1000</span></p>
         <p>Attack: <span id="playerAttack">0</span></p>
         <p>Defence: <span id="playerDefence">0</span></p>
         <div class="inventory">
@@ -80,25 +57,22 @@ if ($result->num_rows > 0) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($inventory as $item):?>
-                        <tr>
-                            <td>
-                                <img src="./assets/images/<?=$item["type"];?>.png" class="preview" alt="Sword">
-                            </td>
-                            <td><?=$item["name"];?></td>
-                            <td><?=$item["attack"];?></td>
-                            <td><?=$item["defence"];?></td>
-                            <td><?=$item["price"];?></td>
-                            <td>
-                                <form method="POST" action="controller.php">
-                                    <input type="hidden" name="action" value="sell">
-                                    <input type="hidden" name="item_id" value="<?=$item["id"];?>">
-                                    <button type="submit">Sell</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-
+                    <tr>
+                        <td>
+                            <img src="./assets/images/sword.png" class="preview" alt="Sword">
+                        </td>
+                        <td>Meč</td>
+                        <td>10</td>
+                        <td>5</td>
+                        <td>200</td>
+                        <td>
+                            <form method="POST" action="controller.php">
+                                <input type="hidden" name="action" value="sell">
+                                <input type="hidden" name="item_id" value="1">
+                                <button type="submit">Sell</button>
+                            </form>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -118,7 +92,6 @@ if ($result->num_rows > 0) {
                 </tr>
             </thead>
             <tbody>
-
                 <?php foreach($marketplace as $item): ?>
                     <tr>
                         <td>

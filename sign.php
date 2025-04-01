@@ -25,7 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (!empty($username) && !empty($password)) {
             try{
-
+                $userTest = $dibi->select("*")->from("player")->where("username = ?",$username)->fetch();
+                if($userTest){
+                    if(password_verify($password,$userTest["password"])){
+                        $_SESSION["user_id"] = $userTest["id"];
+                        $_SESSION["username"] = $userTest["username"];
+                        $_SESSION["message"] = "Úspěšně přihlášen";
+                        $_SESSION["expiration"] = time() + 3600; // Nastavení expirace na 1 hodinu
+                        header("Location: index.php");
+                        exit();
+                    }
+                }
                 $error = "Nesprávné přihlašovací údaje";
             }catch(Exception $e){
                 $error = "Nevalidní databáze";
