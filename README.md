@@ -87,11 +87,6 @@ Projekt používá MySQL databázi se třemi hlavními tabulkami:
 4. Formuláře musí obsahovat základní validaci
 5. Kód musí být přehledný a dobře komentovaný
 
-## Hodnocení
-- Správná implementace Dibi (30 bodů)
-- Funkční nákup a prodej předmětů (20 bodů)
-- Implementace uživatelského systému (30 bodů)
-- Kvalita kódu a dokumentace (20 bodů)
 
 ## Tipy pro Implementaci
 1. Použijte prepared statements pro všechny SQL dotazy
@@ -99,6 +94,3 @@ Projekt používá MySQL databázi se třemi hlavními tabulkami:
 3. Použijte CSS pro stylování přihlašovacího formuláře
 4. Přidejte odhlášení uživatele
 5. Implementujte základní zabezpečení proti SQL injection
-
-## Deadline
-Projekt musí být odevzdán do konce školního roku. 
