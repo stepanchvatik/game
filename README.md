@@ -26,7 +26,7 @@ Projekt používá MySQL databázi se třemi hlavními tabulkami:
 3. Příklad použití Dibi:
    ```php
    // Připojení k databázi
-   $dibi = new Connection([
+   $dibi = new \Dibi\Connection([
        'driver' => 'mysqli',
        'host' => 'localhost',
        'username' => 'root',
