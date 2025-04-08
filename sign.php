@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <?php
 require "./vendor/autoload.php";
+date_default_timezone_set('Europe/Prague');
 session_start();
 
 // Pokud je uživatel již přihlášen, přesměruj na index
@@ -27,13 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try{
                 $userTest = $dibi->select("*")->from("player")->where("username = ?",$username)->fetch();
                 if($userTest){
+                    //úspěšné přihlášení
                     if(password_verify($password,$userTest["password"])){
                         $_SESSION["user_id"] = $userTest["id"];
                         $_SESSION["username"] = $userTest["username"];
                         $_SESSION["message"] = "Úspěšně přihlášen";
-                        $_SESSION["expiration"] = time() + 3600; // Nastavení expirace na 1 hodinu
+                        $_SESSION["expiration"] = strtotime("+1 hour"); // Nastavení expirace na 1 hodinu
                         header("Location: index.php");
                         exit();
+                    }else{//neúspěšné přihlášení - špatné heslo
+                        $dibi->update('player', [
+                            'failed_logins' => $dibi->literal('failed_logins + 1') // $userTest["failed_login"]+1
+                        ])->where('id = ?', $userTest['id'])->execute();
+
+                        if ($userTest['failed_logins'] + 1 >= 3) {
+                            $dibi->update('player', [
+                                'blocked_until' => date("Y-m-d H:i:s", strtotime('+5 minutes'))
+                            ])->where('id = ?', $userTest['id'])->execute();
+                        }
+
                     }
                 }
                 $error = "Nesprávné přihlašovací údaje";
