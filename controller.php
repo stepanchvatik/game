@@ -2,28 +2,6 @@
 
 require "./config.php";
 
-// Connection to DB
-try{
-    $conn = new mysqli('localhost', 'root', 'pass', 'game');
-}catch(mysqli_sql_exception $e) {
-    echo nl2br("Error: Unable to connect to MySQL.\n");
-    echo nl2br("Debugging errno: " . mysqli_connect_errno()."\n");
-    echo nl2br("Debugging error: " . mysqli_connect_error()."\n");
-}
-
-try{
-
-    $dibi = new \Dibi\Connection([
-        'driver' => 'mysqli',
-        'host' => 'localhost',
-        'username' => 'root',
-        'password' => 'pass',
-        'database' => 'game'
-    ]);
-}catch(Exception $e){
-    var_dump($e->getMessage());
-    die();
-}
 
 /*
  * fetchAll - vrací array/pole všech řádků

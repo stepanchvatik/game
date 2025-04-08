@@ -10,9 +10,6 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
 }
 
 
-$dibi = new \Dibi\Connection(DB_CONFIG);
-
-
 $inventory = [];
 $marketplace = [];
 $credit = $dibi->query("SELECT credit FROM player WHERE id = 1")->fetchSIngle();

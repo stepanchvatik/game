@@ -12,3 +12,11 @@ $dbConfig = [
     'database' => 'game'
 ];
 define('DB_CONFIG',$dbConfig);
+
+try{
+
+    $dibi = new \Dibi\Connection(DB_CONFIG);
+}catch(Exception $e){
+    var_dump($e->getMessage());
+    die();
+}
