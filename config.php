@@ -1,5 +1,13 @@
 <?php
 
+$ip = $_SERVER['REMOTE_ADDR'];
+$blockedIPs = file_get_contents('BLOCKED_IPS.txt');
+$blockedIPs = explode("\n", $blockedIPs);
+if (in_array($ip, $blockedIPs)) {
+    die("Tvoje IP adresa je zablokována.");
+}
+
+
 session_start();
 date_default_timezone_set('Europe/Prague');
 require "./vendor/autoload.php";
@@ -13,8 +21,8 @@ $dbConfig = [
 ];
 define('DB_CONFIG',$dbConfig);
 
-try{
 
+try{
     $dibi = new \Dibi\Connection(DB_CONFIG);
 }catch(Exception $e){
     var_dump($e->getMessage());
