@@ -47,7 +47,9 @@ if ($result->num_rows > 0) {
 
 </head>
 <body>
+<a href="./controller.php?action=logout" class="btn btn-danger">Odhlásit se</a>
 <div class="container">
+
     <h5>
         <?php
         echo "Vítej ".$_SESSION["username"]."!";

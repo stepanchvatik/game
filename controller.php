@@ -39,6 +39,12 @@ try{
 
 $_SESSION["message"] = "";
 
+if($_GET["action"] == "logout"){
+    session_destroy();
+    header("Location: sign.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $action = ($_POST["action"] == null) ? "" : $_POST["action"];
