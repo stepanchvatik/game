@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-/** @noinspection ALL */<?php
-require "./vendor/autoload.php";
+<?php
 require "./config.php";
-date_default_timezone_set('Europe/Prague');
-session_start();
 // Pokud je uživatel již přihlášen, přesměruj na index
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     header("Location: index.php");
