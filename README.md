@@ -80,17 +80,100 @@ Projekt používá MySQL databázi se třemi hlavními tabulkami:
    - Uložte ID uživatele do session s expirací 30 minut
    - Zobrazte přihlašovací formulář pouze nepřihlášeným uživatelům
 
-## Požadavky na Implementaci
-1. Všechny SQL dotazy musí být provedeny pomocí Dibi
-2. Hesla musí být bezpečně hashována pomocí `password_hash()`
-3. Session musí mít nastavenou expiraci 30 minut
-4. Formuláře musí obsahovat základní validaci
-5. Kód musí být přehledný a dobře komentovaný
+### 3. Implementace Zabezpečení
+
+#### Úkoly pro Implementaci Zabezpečení
+
+1. Upravte přihlašovací systém tak, aby:
+   - Počítal neúspěšné pokusy o přihlášení
+   - Blokoval uživatele na 5 minut po 3 neúspěšných pokusech
+   - Resetoval počet neúspěšných pokusů po úspěšném přihlášení
+
+2. Implementujte blokování IP adres:
+   - Po 6 neúspěšných pokusech zablokujte IP adresu
+   - Ukládejte blokované IP adresy do souboru BLOCKED_IPS.txt
+   - Kontrolujte blokované IP adresy před každým pokusem o přihlášení
+
+3. Přidejte fingerprint uživatele:
+   - Generujte unikátní fingerprint pro každou session
+   - Kontrolujte fingerprint při každém požadavku
+   - Pokud se fingerprint nezhoduje, odhlaste uživatele
+
+#### Jednotlivé kroky
+
+1. Rozšíření tabulky player:
+   ```sql
+   ALTER TABLE player
+   ADD COLUMN failed_logins INT DEFAULT 0,
+   ADD COLUMN blocked_until DATETIME DEFAULT NULL;
+   ```
+
+2. Implementace blokování uživatele:
+   ```php
+   // Při neúspěšném přihlášení
+   $dibi->update('player', [
+       'failed_logins' => $dibi->literal('failed_logins + 1')
+   ])->where('id = ?', $user['id'])->execute();
+
+   // Kontrola počtu neúspěšných pokusů
+   if ($user['failed_logins'] >= 3) {
+       $dibi->update('player', [
+           'blocked_until' => date("Y-m-d H:i:s", strtotime('+5 minutes'))
+       ])->where('id = ?', $user['id'])->execute();
+   }
+
+   // Při úspěšném přihlášení
+   $dibi->update('player', [
+       'failed_logins' => 0,
+       'blocked_until' => null
+   ])->where('id = ?', $user['id'])->execute();
+   ```
+
+3. Implementace blokování IP adres:
+   ```php
+   // Získání IP uživatele
+   $ip = $_SERVER['REMOTE_ADDR'];
+   
+   // Funkce pro blokování IP
+   function blockIP($ip) {
+       $blockedIPs = file_get_contents('BLOCKED_IPS.txt');
+       if (strpos($blockedIPs, $ip) === false) {
+           file_put_contents('BLOCKED_IPS.txt', $ip . PHP_EOL, FILE_APPEND);
+       }
+   }
+
+   // Kontrola blokované IP
+   function isIPBlocked($ip) {
+       $blockedIPs = file_get_contents('BLOCKED_IPS.txt');
+       return strpos($blockedIPs, $ip) !== false;
+   }
+   ```
+
+4. Implementace fingerprintu uživatele:
+   ```php
+   // Generování fingerprintu
+   function generateFingerprint() {
+       $userAgent = $_SERVER['HTTP_USER_AGENT'];
+       $ip = $_SERVER['REMOTE_ADDR'];
+       $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+       return hash('sha256', $userAgent . $ip . $acceptLanguage);
+   }
+
+   // Uložení fingerprintu do session
+   $_SESSION['fingerprint'] = generateFingerprint();
+
+   // Kontrola fingerprintu
+   function checkFingerprint() {
+       return $_SESSION['fingerprint'] === generateFingerprint();
+   }
+   
+   // Zrušení session
+   if (!checkFingerprint()) {
+       // možný pokus o únos session – zneplatnit přihlášení
+       session_destroy();
+       die("Session fingerprint mismatch");
+   }
+   ```
 
 
-## Tipy pro Implementaci
-1. Použijte prepared statements pro všechny SQL dotazy
-2. Implementujte základní error handling
-3. Použijte CSS pro stylování přihlašovacího formuláře
-4. Přidejte odhlášení uživatele
-5. Implementujte základní zabezpečení proti SQL injection
+
