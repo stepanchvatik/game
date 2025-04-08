@@ -3,6 +3,8 @@ session_start();
 date_default_timezone_set('Europe/Prague');
 
 require "./vendor/autoload.php";
+require "./config.php";
+
 // Connection to DB
 try{
     $conn = new mysqli('localhost', 'root', 'pass', 'game');

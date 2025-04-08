@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 /** @noinspection ALL */<?php
 require "./vendor/autoload.php";
+require "./config.php";
 date_default_timezone_set('Europe/Prague');
 session_start();
-
 // Pokud je uživatel již přihlášen, přesměruj na index
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -14,16 +14,9 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
-        $dibi = new \Dibi\Connection([
-            'driver' => 'mysqli',
-            'host' => 'localhost',
-            'username' => 'root',
-            'password' => 'pass',
-            'database' => 'game'
-        ]);
+        $dibi = new \Dibi\Connection(DB_CONFIG);
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
-        
         if (!empty($username) && !empty($password)) {
             try{
                 $userTest = $dibi->select("*")->from("player")->where("username = ?",$username)->fetch();

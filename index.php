@@ -2,6 +2,7 @@
 <?php
 session_start();
 date_default_timezone_set('Europe/Prague');
+require "./config.php";
 
 // Kontrola přihlášení
 
@@ -11,31 +12,17 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
 }
 
 
-try{
-    $conn = new mysqli('localhost', 'root', 'pass', 'game');
-}catch(mysqli_sql_exception $e) {
-    echo nl2br("Error: Unable to connect to MySQL.\n");
-    echo nl2br("Debugging errno: " . mysqli_connect_errno()."\n");
-    echo nl2br("Debugging error: " . mysqli_connect_error()."\n");
-}
+$dibi = new \Dibi\Connection(DB_CONFIG);
+
 
 $inventory = [];
 $marketplace = [];
-$credit = $conn->query("SELECT credit FROM player WHERE id = 1")->fetch_assoc();
+$credit = $dibi->query("SELECT credit FROM player WHERE id = 1")->fetchSIngle();
 
-$result = $conn->query("SELECT * FROM inventory");
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $inventory[] = $row;
-    }
-}
+$inventory = $dibi->query("SELECT * FROM inventory")->fetchAll();
+$marketplace = $dibi->query("SELECT * FROM marketplace")->fetchAll();
 
-$result = $conn->query("SELECT * FROM marketplace");
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $marketplace[] = $row;
-    }
-}
+
 
 ?>
 <html lang="en">
@@ -66,7 +53,7 @@ if ($result->num_rows > 0) {
     </h5>
     <div class="player-section">
         <h2>Player</h2>
-        <p>Credits: <span id="playerCredits"><?=$credit["credit"];?></span></p>
+        <p>Credits: <span id="playerCredits"><?=$credit;?></span></p>
         <p>Attack: <span id="playerAttack">0</span></p>
         <p>Defence: <span id="playerDefence">0</span></p>
         <div class="inventory">
