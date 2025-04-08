@@ -9,6 +9,12 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     exit();
 }
 
+if($_SESSION["fingerprint"] != generateFingerprint()){
+    session_destroy();
+    header("Location: sign.php");
+    exit();
+}
+
 
 $inventory = [];
 $marketplace = [];

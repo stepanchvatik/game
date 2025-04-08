@@ -1,5 +1,6 @@
 <?php
 require "./config.php";
+
 // Pokud je uživatel již přihlášen, přesměruj na index
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -33,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $_SESSION["username"] = $userTest["username"];
                             $_SESSION["message"] = "Úspěšně přihlášen";
                             $_SESSION["expiration"] = strtotime("+1 hour"); // Nastavení expirace na 1 hodinu
+
+                            $_SESSION['fingerprint'] = generateFingerprint();
+
+
                             header("Location: index.php");
                             exit();
                         }else{//neúspěšné přihlášení - špatné heslo

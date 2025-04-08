@@ -1,4 +1,10 @@
 <?php
+function generateFingerprint() {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    return hash('sha256', $userAgent . $ip . $acceptLanguage);
+}
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $blockedIPs = file_get_contents('BLOCKED_IPS.txt');
