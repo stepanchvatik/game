@@ -58,6 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ])->where('id = ?', $userTest['id'])->execute();
 
                                 if($userTest['failed_logins'] + 1 >= 6){
+                                    $ip = $_SERVER['REMOTE_ADDR'];
+                                    $blockedIPs = file_get_contents('BLOCKED_IPS.txt');
+                                    $blockedIPs = explode("\n", $blockedIPs);
+                                    if (!in_array($ip, $blockedIPs)) {
+                                        file_put_contents('BLOCKED_IPS.txt', $ip . "\n", FILE_APPEND);
+                                    }
+
 
                                 }
 
